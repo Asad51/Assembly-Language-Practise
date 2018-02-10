@@ -1,0 +1,53 @@
+TITLE Reverse String Using Stack
+.MODEL SMALL
+.STACK 100H
+.DATA
+    CR EQU 0DH
+    LF EQU 0AH
+    IN_MSG DB 'Enter a string : ',CR,LF,'$'
+    OUT_MSG DB 'After Rerversing : ',CR,LF,'$'
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    LEA DX,IN_MSG
+    MOV AH,9
+    INT 21H
+
+    MOV CX,0000H
+
+INPUT:
+	MOV AH,1
+    INT 21H
+    CMP AL,CR
+    JE END_INPUT
+    PUSH AX
+    INC CX
+    JMP INPUT
+
+END_INPUT:
+	MOV AH,2
+	MOV DL,CR
+	INT 21H
+	MOV DL,LF
+	INT 21H
+
+	LEA DX,OUT_MSG
+	MOV AH,9
+	INT 21H
+    JCXZ EXIT
+
+PROCESS:
+    MOV AH,2
+    POP DX
+    INT 21H
+    LOOP PROCESS
+
+EXIT:
+    MOV AH,4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
