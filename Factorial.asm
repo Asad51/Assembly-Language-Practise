@@ -1,13 +1,12 @@
-TITLE Series Summation
+TITLE An assembly language to find out factorial of given number
 .MODEL SMALL
 .STACK 100H
 .DATA
     CR EQU 0DH
     LF EQU 0AH
-    MSG1 DB 'Enter a number : ',CR,LF,'$'
+    MSG1 DB 'Enter a Digit : ',CR,LF,'$'
     MSG2 DB CR,LF,'Factorial : ','$'
-    NUM DB 100 DUP(?)
-    SUM DB 00H
+    MSG3 DB CR,LF,'Not a digit.','$'
 
 .CODE
 MAIN PROC
@@ -20,6 +19,10 @@ MAIN PROC
 
     MOV AH,1
     INT 21H
+    CMP AL,'0'
+    JL ILLEGAL
+    CMP AL,'9'
+    JG ILLEGAL
 
     SUB AL,30H
     MOV BL,AL
@@ -27,12 +30,12 @@ MAIN PROC
 
 FACTORIAL:
     CMP BL,01H
-    JLE EXIT
+    JLE OUTPUT
     MUL BL
     DEC BL
     JMP FACTORIAL
 
-EXIT:
+OUTPUT:
     MOV BL,AL
     LEA DX,MSG2
     MOV AH,9
@@ -42,7 +45,13 @@ EXIT:
     MOV AH,2
     MOV DL,BL
     INT 21H
+    JMP EXIT
+ILLEGAL:
+    LEA DX,MSG3
+    MOV AH,9
+    INT 21H
 
+EXIT:
     MOV AH,4CH
     INT 21H
 
