@@ -1,0 +1,102 @@
+TITLE Finding Substring
+.MODEL SMALL
+.STACK 100H
+.DATA
+    CR EQU 0DH
+    LF EQU 0AH
+    MSG1 DB 'Enter main string : ',CR,LF,'$'
+    MSG2 DB CR,LF,'Enter substring : ',CR,LF,'$'
+    MSG3 DB CR,LF,'Substring is found',CR,LF,'$'
+    MSG4 DB CR,LF,'substring is not found','$'
+    STR1 DB 100 DUP(?)
+    STR2 DB 100 DUP(?)
+    LEN1 DW (0)
+    LEN2 DW (0)
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    LEA DX,MSG1
+    MOV AH,9
+    INT 21H
+
+    MOV BX,000H
+    MOV SI,00H
+    MOV DI,00H
+    MOV CX,00H
+
+INPUT_S1:
+    MOV AH,1
+    INT 21H
+    CMP AL,CR
+    JE PROCESS2
+    MOV STR1[SI],AL
+	INC SI
+    JMP INPUT_S1
+	
+PROCESS2:
+	LEA DX,MSG2
+    MOV AH,9
+    INT 21H
+
+INPUT_S2:
+    MOV AH,1
+    INT 21H
+    CMP AL,CR
+    JE PROCESS
+    MOV STR2[BX],AL
+	INC BX
+    JMP INPUT_S2
+
+PROCESS:
+    CMP SI,00H
+    JE NO_SUB
+    CMP BX,00H
+    JE NO_SUB
+    MOV LEN1,SI
+    MOV LEN2,BX
+	MOV SI,00H
+	;SUB BX,01H
+
+LOOP1: 
+    MOV BL,STR2[BX]
+    CMP BL,STR2[DI]
+    JE SUB
+    CMP SI,LEN1
+    JE NO_SUB
+    MOV BL,STR1[SI]
+    CMP BL,STR2[DI]
+    JNE LOOP2
+    INC SI
+    INC DI
+    JMP LOOP1
+
+LOOP2:
+	INC SI
+    CMP DI,00H
+    JE LOOP1
+	DEC SI
+    MOV DI,00H
+	JMP LOOP1
+
+SUB:
+    LEA DX,MSG3
+    MOV AH,9
+    INT 21H
+    JMP EXIT
+
+NO_SUB:
+    LEA DX,MSG4
+    MOV AH,9
+    INT 21H
+
+EXIT:
+    MOV AH,4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+
